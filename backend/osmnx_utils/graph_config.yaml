@@ -1,0 +1,9 @@
+map_dir_path: "maps" # Directory in root backend/ to save graph.
+osmnx_graph_name: "perth" # Not including file extension.
+network_type: "drive" # all, all_public, bike, drive, drive_service, walk
+top_left_geo_coord: 
+  lat: -31.703589 # Latitude.
+  long: 115.706794 # Longitude.
+bottom_right_geo_coord: 
+  lat: -32.258136 # Latitude.
+  long: 116.092168 # Longitude.

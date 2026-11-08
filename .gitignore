@@ -72,3 +72,5 @@ docs/_build/
 .python-version
 
 backend/rust_lib/target/
+backend/maps/
+backend/cache/
