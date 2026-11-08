@@ -2,9 +2,11 @@ from contextlib import asynccontextmanager
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from osmnx_utils.load_graph import load_graph
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    graph = load_graph("osmnx_utils/graph_config.yaml")
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -36,4 +38,4 @@ def get_api_status():
     return {"status": "Backend API online."}
 
 # Add API routers.
-app.include_router()
+#app.include_router()
