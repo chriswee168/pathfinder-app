@@ -16,4 +16,4 @@ def test_load_graph_yaml():
 
 def test_load_graph_file():
     load_graph("tests/graph_config_test.yaml")
-    assert os.path.exists("maps/perth.graphml")
+    assert os.path.exists("maps/perth.json")
