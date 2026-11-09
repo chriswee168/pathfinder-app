@@ -48,4 +48,57 @@ def load_graph(graph_config_path: str):
         graph = ox.load_graphml(graph_path)
         print(f"Graph {graph_path} loaded.")
 
-    return graph
+    return graph_dict
+
+def create_graph_dict(graph):
+    """
+    Create graph dictionary containing nodes and their edges from OSMnx graph.
+
+    Parameters:
+        graph (MultiDiGraph[Any, dict[str, Any], dict[str, Any]]): Graph object.
+    
+    Returns:
+        graph_dict (dict): Graph dictionary containing nodes and their edges.
+    """
+    graph = ox.routing.add_edge_speeds(graph, fallback=25)
+    graph = ox.routing.add_edge_travel_times(graph)
+
+    nodes, edges = ox.graph_to_gdfs(graph)
+
+    # Initialize the graph dictionary.
+    graph_dict: dict = {}
+    for index, row in nodes.iterrows():
+        graph_dict.update({
+            index: {
+                "lat": row["y"],
+                "long": row["x"],
+                "edges": []
+            }
+        })
+
+    selected_edges = edges["maxspeed"].notna() & edges["name"].notna()
+    edges = edges[selected_edges]
+    
+    for index, row in edges.iterrows():
+        u = index[0]
+        v = index[1]
+        key = index[2]
+        street_name = row["name"]
+        speed_kph = row["speed_kph"]
+        travel_time_s = row["travel_time"]
+        length_m = row["length"]
+        highway = row["highway"]
+        geometry = row["geometry"]
+        lat_long_coords = [(lat, long) for long, lat in geometry.coords]
+        
+        graph_dict[u]["edges"].append({
+            "index": (u, v, key), 
+            "street_name": street_name,
+            "speed_kph": speed_kph,
+            "travel_time_s": travel_time_s,
+            "length_m": length_m,
+            "highway": highway,
+            "lat_long_coords": lat_long_coords
+        })
+
+    return graph_dict
