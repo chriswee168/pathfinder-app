@@ -3,10 +3,13 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from osmnx_utils.load_graph import load_graph
+import rust_lib
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     graph = load_graph("osmnx_utils/graph_config.yaml")
+    test = rust_lib.create_graph(10.34)
+    test.display()
     yield
 
 app = FastAPI(lifespan=lifespan)
