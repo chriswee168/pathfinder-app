@@ -7,8 +7,8 @@ import rust_lib
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    graph = load_graph("osmnx_utils/graph_config.yaml")
-    test = rust_lib.create_graph(10.34)
+    graph_path, graph = load_graph("osmnx_utils/graph_config.yaml")
+    test = rust_lib.create_graph(graph_path)
     test.display()
     yield
 

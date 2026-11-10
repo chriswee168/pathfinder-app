@@ -59,7 +59,7 @@ def load_graph(graph_config_path: str) -> dict:
             
         print(f"Graph {graph_path} loaded.")
 
-    return graph_dict
+    return graph_path, graph_dict
 
 def create_graph_dict(graph):
     """
@@ -101,6 +101,12 @@ def create_graph_dict(graph):
         highway = row["highway"]
         geometry = row["geometry"]
         lat_long_coords = [(lat, long) for long, lat in geometry.coords]
+
+        # Convert lists to strings joined with forward slash.
+        if isinstance(street_name, list):
+            street_name = "/".join(street_name)
+        if isinstance(highway, list):
+            highway = "/".join(highway)
         
         graph_dict[u]["edges"].append({
             "index": (u, v, key), 
