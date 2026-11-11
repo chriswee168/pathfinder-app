@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from api.v1 import pathfind
 from osmnx_utils.load_graph import load_graph
+import os
 import rust_lib
 
 @asynccontextmanager
@@ -41,4 +42,4 @@ def get_api_status():
     return {"status": "Backend API online."}
 
 # Add API routers.
-#app.include_router()
+app.include_router(pathfind.router)
