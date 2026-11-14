@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{cmp::Ordering, collections::HashMap};
 
 use pyo3::pyclass;
 use serde::Deserialize;
@@ -25,3 +25,25 @@ pub struct Node { lat: f32, long: f32, edges: Vec<Edges> }
 
 /// Final graph hash map type.
 pub type GraphMap = HashMap<String, Node>;
+
+/// Wrapper struct for node ID priority queue used for A* search.
+pub struct NodeIDWrapper<'a> {
+    node_id: &'a str,
+    cost: f32
+}
+impl PartialOrd for NodeIDWrapper<'_> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.cost.partial_cmp(&other.cost)
+    }
+}
+impl PartialEq for NodeIDWrapper<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.cost == other.cost
+    }
+}
+impl Ord for NodeIDWrapper<'_> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.cost.total_cmp(&other.cost)
+    }
+}
+impl Eq for NodeIDWrapper<'_> {}
