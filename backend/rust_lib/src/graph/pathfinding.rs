@@ -18,7 +18,7 @@ pub fn a_star_search(
     node_id_priority_queue.push(NodeIDWrapper {node_id: start_node_id.to_string(), cost: 0.0});
 
     // Start node ID == End node ID.
-    let destination_reached: bool = false;
+    let mut destination_reached: bool = false;
 
     // Get end node's lat and long.
     let end_node: &Node = graph_hashmap.get(end_node_id).unwrap();
@@ -33,42 +33,51 @@ pub fn a_star_search(
             let current_node_id: String = current_node_id_wrapper.node_id;
             let current_cost: f32 = current_node_id_wrapper.cost;
 
-            // Get actual node reference in graph and its edges.
-            let node: &Node = graph_hashmap.get(&current_node_id).unwrap();
-            for edge in &node.edges
+            // Terminate loop when reached destination.
+            if current_node_id == end_node_id
             {
-                let next_node_id: String = edge.index[1].to_string();
-                let next_node: &Node = graph_hashmap.get(&next_node_id).unwrap();
-                let next_node_lat: f32 = next_node.lat;
-                let next_node_long: f32 = next_node.long;
-
-                // Calculate haversine distance between next node and end node.
-                let hav_dist: f32 = haversine(
-                    next_node_lat, next_node_long, 
-                    end_node_lat, end_node_long
-                );
-
-                // Calculate updated cost from heuristic.
-                // Cost sign is flipped to make binary heap prioritise smaller costs.
-                let updated_cost: f32 = -(current_cost + edge.travel_time_s + hav_dist);
-
-                // Add next node ID wrapper to priority queue.
-                let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
-                    node_id: next_node_id.clone(), cost: updated_cost
-                };
-                node_id_priority_queue.push(next_node_id_wrapper);
-
-                if let Some(next_node_cost_details) = cost_hashmap.get_mut(&next_node_id)
+                destination_reached = true;
+            }
+            else
+            {
+                
+                // Get actual node reference in graph and its edges.
+                let node: &Node = graph_hashmap.get(&current_node_id).unwrap();
+                for edge in &node.edges
                 {
-                    // Update next node's cost and previous node if lower cost discovered.
-                    if updated_cost < next_node_cost_details.0
+                    let next_node_id: String = edge.index[1].to_string();
+                    let next_node: &Node = graph_hashmap.get(&next_node_id).unwrap();
+                    let next_node_lat: f32 = next_node.lat;
+                    let next_node_long: f32 = next_node.long;
+
+                    // Calculate haversine distance between next node and end node.
+                    let hav_dist: f32 = haversine(
+                        next_node_lat, next_node_long, 
+                        end_node_lat, end_node_long
+                    );
+
+                    // Calculate updated cost from heuristic.
+                    // Cost sign is flipped to make binary heap prioritise smaller costs.
+                    let updated_cost: f32 = -(current_cost + edge.travel_time_s + hav_dist);
+
+                    // Add next node ID wrapper to priority queue.
+                    let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
+                        node_id: next_node_id.clone(), cost: updated_cost
+                    };
+                    node_id_priority_queue.push(next_node_id_wrapper);
+
+                    if let Some(next_node_cost_details) = cost_hashmap.get_mut(&next_node_id)
                     {
-                        *next_node_cost_details = (updated_cost, current_node_id.clone());
+                        // Update next node's cost and previous node if lower cost discovered.
+                        if updated_cost < next_node_cost_details.0
+                        {
+                            *next_node_cost_details = (updated_cost, current_node_id.clone());
+                        }
                     }
-                }
-                else
-                {   // Add next node details to cost hashmap if nonexistent.
-                    cost_hashmap.insert(next_node_id, (updated_cost, current_node_id.clone()));
+                    else
+                    {   // Add next node details to cost hashmap if nonexistent.
+                        cost_hashmap.insert(next_node_id, (updated_cost, current_node_id.clone()));
+                    }
                 }
             }
         }
