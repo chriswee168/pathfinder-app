@@ -11,7 +11,7 @@ pub fn a_star_search(
 {
     // Create essential heap and hashmap data structures.
     let mut node_id_priority_queue: BinaryHeap<NodeIDWrapper> = BinaryHeap::new();
-    let cost_hashmap: HashMap<&str, (f32, &str)> = HashMap::new(); // node_id: (total_cost, prev_node_id)
+    let mut cost_hashmap: HashMap<String, (f32, String)> = HashMap::new(); // node_id: (total_cost, prev_node_id)
     let visited_nodes_hashmap: HashMap<&str, bool> = HashMap::new();
 
     // Insert initial NodeIDWrapper.
@@ -54,9 +54,22 @@ pub fn a_star_search(
 
                 // Add next node ID wrapper to priority queue.
                 let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
-                    node_id: next_node_id, cost: updated_cost
+                    node_id: next_node_id.clone(), cost: updated_cost
                 };
                 node_id_priority_queue.push(next_node_id_wrapper);
+
+                if let Some(next_node_cost_details) = cost_hashmap.get_mut(&next_node_id)
+                {
+                    // Update next node's cost and previous node if lower cost discovered.
+                    if updated_cost < next_node_cost_details.0
+                    {
+                        *next_node_cost_details = (updated_cost, current_node_id.clone());
+                    }
+                }
+                else
+                {   // Add next node details to cost hashmap if nonexistent.
+                    cost_hashmap.insert(next_node_id, (updated_cost, current_node_id.clone()));
+                }
             }
         }
     }
