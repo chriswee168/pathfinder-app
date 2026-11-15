@@ -1,6 +1,6 @@
 use std::collections::{BinaryHeap, HashMap};
 
-use crate::graph::types::{GraphMap, Node, NodeIDWrapper};
+use crate::graph::{haversine::haversine, types::{GraphMap, Node, NodeIDWrapper}};
 
 /// Implement A* search algorithm from start to end node.
 pub fn a_star_search(
@@ -20,6 +20,11 @@ pub fn a_star_search(
     // Start node ID == End node ID.
     let destination_reached: bool = false;
 
+    // Get end node's lat and long.
+    let end_node: &Node = graph_hashmap.get(end_node_id).unwrap();
+    let end_node_lat: f32 = end_node.lat;
+    let end_node_long: f32 = end_node.long;
+
     // A* search loop.
     while !node_id_priority_queue.is_empty() || !destination_reached
     {
@@ -33,9 +38,18 @@ pub fn a_star_search(
             for edge in &node.edges
             {
                 let next_node_id: String = edge.index[1].to_string();
+                let next_node: &Node = graph_hashmap.get(&next_node_id).unwrap();
+                let next_node_lat: f32 = next_node.lat;
+                let next_node_long: f32 = next_node.long;
+
+                // Calculate haversine distance between next node and end node.
+                let hav_dist: f32 = haversine(
+                    next_node_lat, next_node_long, 
+                    end_node_lat, end_node_long
+                );
 
                 // Calculate updated cost from heuristic.
-                let updated_cost: f32 = current_cost + edge.travel_time_s;
+                let updated_cost: f32 = current_cost + edge.travel_time_s + hav_dist;
 
                 // Add next node ID wrapper to priority queue.
                 let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
