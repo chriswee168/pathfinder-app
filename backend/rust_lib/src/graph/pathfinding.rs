@@ -32,7 +32,16 @@ pub fn a_star_search(
             let node: &Node = graph_hashmap.get(&current_node_id).unwrap();
             for edge in &node.edges
             {
-                
+                let next_node_id: String = edge.index[1].to_string();
+
+                // Calculate updated cost from heuristic.
+                let updated_cost: f32 = current_cost + edge.travel_time_s;
+
+                // Add next node ID wrapper to priority queue.
+                let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
+                    node_id: next_node_id, cost: updated_cost
+                };
+                node_id_priority_queue.push(next_node_id_wrapper);
             }
         }
     }
