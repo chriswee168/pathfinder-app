@@ -15,7 +15,7 @@ pub fn a_star_search(
     let visited_nodes_hashmap: HashMap<&str, bool> = HashMap::new();
 
     // Insert initial NodeIDWrapper.
-    node_id_priority_queue.push(NodeIDWrapper {node_id: start_node_id, cost: 0.0});
+    node_id_priority_queue.push(NodeIDWrapper {node_id: start_node_id.to_string(), cost: 0.0});
 
     // Start node ID == End node ID.
     let destination_reached: bool = false;
@@ -25,11 +25,11 @@ pub fn a_star_search(
     {
         if let Some(current_node_id_wrapper) = node_id_priority_queue.pop()
         {
-            let current_node_id: &str = current_node_id_wrapper.node_id;
+            let current_node_id: String = current_node_id_wrapper.node_id;
             let current_cost: f32 = current_node_id_wrapper.cost;
 
             // Get actual node reference in graph and its edges.
-            let node: &Node = graph_hashmap.get(current_node_id).unwrap();
+            let node: &Node = graph_hashmap.get(&current_node_id).unwrap();
             for edge in &node.edges
             {
                 

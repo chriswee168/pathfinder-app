@@ -27,23 +27,23 @@ pub struct Node { pub lat: f32, pub long: f32, pub edges: Vec<Edge> }
 pub type GraphMap = HashMap<String, Node>;
 
 /// Wrapper struct for node ID priority queue used for A* search.
-pub struct NodeIDWrapper<'a> {
-    pub node_id: &'a str,
+pub struct NodeIDWrapper {
+    pub node_id: String,
     pub cost: f32
 }
-impl PartialOrd for NodeIDWrapper<'_> {
+impl PartialOrd for NodeIDWrapper {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         self.cost.partial_cmp(&other.cost)
     }
 }
-impl PartialEq for NodeIDWrapper<'_> {
+impl PartialEq for NodeIDWrapper {
     fn eq(&self, other: &Self) -> bool {
         self.cost == other.cost
     }
 }
-impl Ord for NodeIDWrapper<'_> {
+impl Ord for NodeIDWrapper {
     fn cmp(&self, other: &Self) -> Ordering {
         self.cost.total_cmp(&other.cost)
     }
 }
-impl Eq for NodeIDWrapper<'_> {}
+impl Eq for NodeIDWrapper {}
