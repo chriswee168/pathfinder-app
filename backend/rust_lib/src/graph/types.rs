@@ -28,8 +28,8 @@ pub type GraphMap = HashMap<String, Node>;
 
 /// Wrapper struct for node ID priority queue used for A* search.
 pub struct NodeIDWrapper<'a> {
-    node_id: &'a str,
-    cost: f32
+    pub node_id: &'a str,
+    pub cost: f32
 }
 impl PartialOrd for NodeIDWrapper<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
