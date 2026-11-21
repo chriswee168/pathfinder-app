@@ -3,11 +3,12 @@ use std::collections::{BinaryHeap, HashMap, HashSet};
 use crate::graph::{haversine::haversine, types::{GraphMap, Node, NodeIDWrapper}};
 
 /// Implement A* search algorithm from start to end node.
+/// Return the shortest route between start and end node as a vector of string tuples.
 pub fn a_star_search(
     start_node_id: &str, 
     end_node_id: &str, 
     graph_hashmap: &GraphMap
-)
+) -> Option<Vec<(String, String)>>
 {
     // Create essential heap and hashmap data structures.
     let mut node_id_priority_queue: BinaryHeap<NodeIDWrapper> = BinaryHeap::new();
@@ -86,5 +87,43 @@ pub fn a_star_search(
                 }
             }
         }
+    }
+
+    // Check if end node was reached, otherwise return None.
+    if cost_hashmap.contains_key(end_node_id)
+    {
+        // Get the shortest route from start to end node using cost hashmap.
+        let mut shortest_route: Vec<(String, String)> = Vec::new();
+        let mut current_id: Option<String> = Some(end_node_id.to_string());
+        while current_id.is_some()
+        {
+            // Get previous node ID using current node ID.
+            let current_id_unwrapped: &String = current_id.as_ref().unwrap();
+            let prev_node_id: &String = &cost_hashmap.get(current_id_unwrapped).unwrap().1;
+
+            let from_id: String = prev_node_id.clone();
+            let to_id: String = current_id.clone().unwrap();
+
+            // Add TO and FROM node ID pair to shortest route vector.
+            shortest_route.push((from_id, to_id));
+            
+            if cost_hashmap.contains_key(prev_node_id)
+            {
+                current_id = Some(prev_node_id.clone());
+            }
+            else
+            {
+                current_id = None; // Starting node ID has been reached.
+            }
+        }
+
+        // Reverse the order of shortest route to get correct order.
+        shortest_route.reverse();
+
+        return Some(shortest_route);
+    }
+    else
+    {
+        return None
     }
 }
