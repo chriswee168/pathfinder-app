@@ -14,11 +14,35 @@ pub fn haversine(lat1: f32, long1: f32, lat2: f32, long2: f32) -> f32
     let long_diff: f32 = long2_rad - long1_rad;
 
     let a: f32 = (lat_diff / 2.0).sin().powi(2) + lat1_rad.cos() * 
-        lat2_rad.cos() + (long_diff / 2.0).sin().powi(2);
+        lat2_rad.cos() * (long_diff / 2.0).sin().powi(2);
     
     let c: f32 = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
 
     let distance: f32 = MEAN_EARTH_RADIUS_KM * c;
 
     return distance;
+}
+
+#[cfg(test)]
+mod tests
+{
+    use super::*;
+
+    #[test]
+    fn test_haversine()
+    {   
+        let lat1: f32 = -31.0;
+        let long1: f32 = 117.0;
+        let lat2: f32 = -32.0;
+        let long2: f32 = 118.0;
+        let calc_km: f32 = haversine(lat1, long1, lat2, long2);
+
+        let actual_km: f32 = 146.13;
+        let epsilon: f32 = 0.01;
+        
+        assert!(
+            (calc_km - actual_km).abs() < epsilon, 
+            "Expected {}, got {}", actual_km, calc_km
+        );
+    }
 }
