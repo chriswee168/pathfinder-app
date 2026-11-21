@@ -22,3 +22,27 @@ pub fn haversine(lat1: f32, long1: f32, lat2: f32, long2: f32) -> f32
 
     return distance;
 }
+
+#[cfg(test)]
+mod tests
+{
+    use super::*;
+
+    #[test]
+    fn test_haversine()
+    {   
+        let lat1: f32 = -31.0;
+        let long1: f32 = 117.0;
+        let lat2: f32 = -32.0;
+        let long2: f32 = 118.0;
+        let calc_km: f32 = haversine(lat1, long1, lat2, long2);
+
+        let actual_km: f32 = 146.13;
+        let epsilon: f32 = 0.01;
+        
+        assert!(
+            (calc_km - actual_km).abs() < epsilon, 
+            "Expected {}, got {}", actual_km, calc_km
+        );
+    }
+}
