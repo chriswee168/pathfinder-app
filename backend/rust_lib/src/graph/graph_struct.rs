@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 
 use crate::graph::types::GraphMap;
 
-// Graph struct to 
+// Graph struct containing graph hashmap.
 #[pyclass]
 pub struct Graph
 {
