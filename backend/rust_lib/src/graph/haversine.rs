@@ -14,7 +14,7 @@ pub fn haversine(lat1: f32, long1: f32, lat2: f32, long2: f32) -> f32
     let long_diff: f32 = long2_rad - long1_rad;
 
     let a: f32 = (lat_diff / 2.0).sin().powi(2) + lat1_rad.cos() * 
-        lat2_rad.cos() + (long_diff / 2.0).sin().powi(2);
+        lat2_rad.cos() * (long_diff / 2.0).sin().powi(2);
     
     let c: f32 = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
 
