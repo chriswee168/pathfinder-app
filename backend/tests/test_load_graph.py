@@ -1,6 +1,6 @@
 import yaml
 import os
-from osmnx_utils.load_graph import load_graph
+from osmnx_utils.download_graph import download_graph
 
 def test_load_graph_yaml():
     with open("tests/graph_config_test.yaml", "r") as f:
@@ -15,5 +15,5 @@ def test_load_graph_yaml():
     }
 
 def test_load_graph_file():
-    load_graph("tests/graph_config_test.yaml")
-    assert os.path.exists("maps/perth.json")
+    download_graph("tests/graph_config_test.yaml")
+    assert os.path.exists("maps/perth.mpk")

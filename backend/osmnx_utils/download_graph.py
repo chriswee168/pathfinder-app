@@ -3,7 +3,7 @@ import yaml
 import os
 import msgpack
 
-def load_graph(graph_config_path: str) -> dict:
+def download_graph(graph_config_path: str) -> str:
     """
     Function to download a new OpenStreetMap graph or load an existing one.
 
@@ -11,7 +11,7 @@ def load_graph(graph_config_path: str) -> dict:
         graph_config_path (str): Path to YAML graph configuration file.
     
     Returns:
-        graph_dict (dict): Graph dictionary.
+        graph_path (str): File path to graph as MessagePack file.
     """
 
     with open(graph_config_path, "r") as f:
@@ -46,19 +46,14 @@ def load_graph(graph_config_path: str) -> dict:
         graph_dict = create_graph_dict(graph)
         
         with open(graph_path, "wb") as f:
-            f.write(msgpack.packb(graph_dict, use_bin_type=True))
+            f.write(msgpack.packb(graph_dict))
 
         print(f"Saved graph to {graph_path}")
 
     else:
-        print(f"Loading existing graph {graph_path}")
+        pass
 
-        with open(graph_path, "rb") as f:
-            graph_dict = msgpack.unpackb(f.read())
-            
-        print(f"Graph {graph_path} loaded.")
-
-    return graph_path, graph_dict
+    return graph_path
 
 def create_graph_dict(graph):
     """
