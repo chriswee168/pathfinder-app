@@ -1,9 +1,7 @@
-from typing import Any
-from networkx import MultiDiGraph
 import osmnx as ox
 import yaml
 import os
-import json
+import msgpack
 
 def load_graph(graph_config_path: str) -> dict:
     """
@@ -27,13 +25,14 @@ def load_graph(graph_config_path: str) -> dict:
     bottom_lat: float = graph_config["bottom_right_geo_coord"]["lat"]
     right_long: float = graph_config["bottom_right_geo_coord"]["long"]
 
-    graph_path = os.path.join(map_dir_path, f"{graph_name}.json")
+    file_ext = ".mpk"
+    graph_path = os.path.join(map_dir_path, graph_name + file_ext)
 
     if not os.path.exists(map_dir_path):
         os.makedirs(map_dir_path)
 
     # Download graph and save as dictionary, or load existing graph dictionary from
-    # JSON.
+    # msgpack file.
     if not os.path.exists(graph_path):
         print(
             f"Downloading graph between (lat: {top_lat}, long: {left_long}) and "
@@ -46,16 +45,16 @@ def load_graph(graph_config_path: str) -> dict:
 
         graph_dict = create_graph_dict(graph)
         
-        with open(graph_path, "w") as f:
-            json.dump(graph_dict, f, indent=4)
+        with open(graph_path, "wb") as f:
+            f.write(msgpack.packb(graph_dict, use_bin_type=True))
 
         print(f"Saved graph to {graph_path}")
 
     else:
         print(f"Loading existing graph {graph_path}")
 
-        with open(graph_path, "r") as f:
-            graph_dict = json.load(f)
+        with open(graph_path, "rb") as f:
+            graph_dict = msgpack.unpackb(f.read())
             
         print(f"Graph {graph_path} loaded.")
 
