@@ -27,6 +27,7 @@ pub struct Node { pub lat: f32, pub long: f32, pub edges: Vec<Edge> }
 pub type GraphMap = HashMap<String, Node>;
 
 /// Wrapper struct for node ID priority queue used for A* search.
+#[allow(dead_code)]
 pub struct NodeIDWrapper {
     pub node_id: String,
     pub cost: f32
