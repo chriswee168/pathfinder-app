@@ -5,24 +5,24 @@ use crate::graph::{haversine::haversine, types::{GraphMap, Node, NodeIDWrapper}}
 /// Implement A* search algorithm from start to end node.
 /// Return the shortest route between start and end node as a vector of string tuples.
 pub fn a_star_search(
-    start_node_id: &str, 
-    end_node_id: &str, 
+    start_node_id: i64, 
+    end_node_id: i64, 
     graph_hashmap: &GraphMap
-) -> Option<Vec<(String, String)>>
+) -> Option<Vec<(i64, i64)>>
 {
     // Create essential heap and hashmap data structures.
     let mut node_id_priority_queue: BinaryHeap<NodeIDWrapper> = BinaryHeap::new();
-    let mut cost_hashmap: HashMap<String, (f32, String)> = HashMap::new(); // node_id: (total_cost, prev_node_id)
-    let mut visited_nodes_hashset: HashSet<String> = HashSet::new();
+    let mut cost_hashmap: HashMap<i64, (f32, i64)> = HashMap::new(); // node_id: (total_cost, prev_node_id)
+    let mut visited_nodes_hashset: HashSet<i64> = HashSet::new();
 
     // Insert initial NodeIDWrapper.
-    node_id_priority_queue.push(NodeIDWrapper {node_id: start_node_id.to_string(), cost: 0.0});
+    node_id_priority_queue.push(NodeIDWrapper {node_id: start_node_id, cost: 0.0});
 
     // Start node ID == End node ID.
     let mut destination_reached: bool = false;
 
     // Get end node's lat and long.
-    let end_node: &Node = graph_hashmap.get(end_node_id).unwrap();
+    let end_node: &Node = graph_hashmap.get(&end_node_id).unwrap();
     let end_node_lat: f32 = end_node.lat;
     let end_node_long: f32 = end_node.long;
 
@@ -31,7 +31,7 @@ pub fn a_star_search(
     {
         if let Some(current_node_id_wrapper) = node_id_priority_queue.pop()
         {
-            let current_node_id: String = current_node_id_wrapper.node_id;
+            let current_node_id: i64 = current_node_id_wrapper.node_id;
             let current_cost: f32 = current_node_id_wrapper.cost;
 
             // Terminate loop when reached destination.
@@ -42,13 +42,13 @@ pub fn a_star_search(
             else
             {
                 // Mark current node as visited.
-                visited_nodes_hashset.insert(current_node_id.clone());
+                visited_nodes_hashset.insert(current_node_id);
 
                 // Get actual node reference in graph and its edges.
                 let node: &Node = graph_hashmap.get(&current_node_id).unwrap();
                 for edge in &node.edges
                 {
-                    let next_node_id: String = edge.index[1].to_string();
+                    let next_node_id: i64 = edge.index[1];
                     if visited_nodes_hashset.contains(&next_node_id)
                     {
                         let next_node: &Node = graph_hashmap.get(&next_node_id).unwrap();
@@ -67,7 +67,7 @@ pub fn a_star_search(
 
                         // Add next node ID wrapper to priority queue.
                         let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
-                            node_id: next_node_id.clone(), cost: updated_cost
+                            node_id: next_node_id, cost: updated_cost
                         };
                         node_id_priority_queue.push(next_node_id_wrapper);
 
@@ -76,12 +76,12 @@ pub fn a_star_search(
                             // Update next node's cost and previous node if lower cost discovered.
                             if updated_cost < next_node_cost_details.0
                             {
-                                *next_node_cost_details = (updated_cost, current_node_id.clone());
+                                *next_node_cost_details = (updated_cost, current_node_id);
                             }
                         }
                         else
                         {   // Add next node details to cost hashmap if nonexistent.
-                            cost_hashmap.insert(next_node_id, (updated_cost, current_node_id.clone()));
+                            cost_hashmap.insert(next_node_id, (updated_cost, current_node_id));
                         }
                     }
                 }
@@ -90,26 +90,23 @@ pub fn a_star_search(
     }
 
     // Check if end node was reached, otherwise return None.
-    if cost_hashmap.contains_key(end_node_id)
+    if cost_hashmap.contains_key(&end_node_id)
     {
         // Get the shortest route from start to end node using cost hashmap.
-        let mut shortest_route: Vec<(String, String)> = Vec::new();
-        let mut current_id: Option<String> = Some(end_node_id.to_string());
+        let mut shortest_route: Vec<(i64, i64)> = Vec::new();
+        let mut current_id: Option<i64> = Some(end_node_id);
         while current_id.is_some()
         {
             // Get previous node ID using current node ID.
-            let current_id_unwrapped: &String = current_id.as_ref().unwrap();
-            let prev_node_id: &String = &cost_hashmap.get(current_id_unwrapped).unwrap().1;
-
-            let from_id: String = prev_node_id.clone();
-            let to_id: String = current_id.clone().unwrap();
+            let current_id_unwrapped: i64 = current_id.unwrap();
+            let prev_node_id: i64 = cost_hashmap.get(&current_id_unwrapped).unwrap().1;
 
             // Add TO and FROM node ID pair to shortest route vector.
-            shortest_route.push((from_id, to_id));
+            shortest_route.push((prev_node_id, current_id_unwrapped));
             
-            if cost_hashmap.contains_key(prev_node_id)
+            if cost_hashmap.contains_key(&prev_node_id)
             {
-                current_id = Some(prev_node_id.clone());
+                current_id = Some(prev_node_id);
             }
             else
             {

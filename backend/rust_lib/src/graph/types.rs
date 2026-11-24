@@ -8,7 +8,7 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Edge { 
-    pub index: Vec<u128>,
+    pub index: Vec<i64>,
     pub street_name: String,
     pub speed_kph: f32,
     pub travel_time_s: f32,
@@ -24,12 +24,12 @@ pub struct Edge {
 pub struct Node { pub lat: f32, pub long: f32, pub edges: Vec<Edge> }
 
 /// Final graph hash map type.
-pub type GraphMap = HashMap<String, Node>;
+pub type GraphMap = HashMap<i64, Node>;
 
 /// Wrapper struct for node ID priority queue used for A* search.
 #[allow(dead_code)]
 pub struct NodeIDWrapper {
-    pub node_id: String,
+    pub node_id: i64,
     pub cost: f32
 }
 impl PartialOrd for NodeIDWrapper {
