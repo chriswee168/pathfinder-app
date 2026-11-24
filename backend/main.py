@@ -2,13 +2,14 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.v1 import pathfind
-from osmnx_utils.load_graph import load_graph
+from osmnx_utils.download_graph import download_graph
 import os
 import rust_lib
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    graph_path, graph = load_graph("osmnx_utils/graph_config.yaml")
+    graph_path = download_graph("osmnx_utils/graph_config.yaml")
+    print(f"Loading map data from {graph_path}")
     test = rust_lib.create_graph(graph_path)
     test.display()
     yield

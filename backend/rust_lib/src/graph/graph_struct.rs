@@ -15,9 +15,9 @@ pub struct Graph
 impl Graph
 {
     #[new]
-    pub fn new(json_path: String) -> Self
+    pub fn new(mpk_path: String) -> Self
     {
-        let graph_hashmap: GraphMap = load_from_json(json_path);
+        let graph_hashmap: GraphMap = load_from_mpk(mpk_path);
         return Graph { graph_hashmap };
     }
 
@@ -27,12 +27,12 @@ impl Graph
     }
 }
 
-/// Load map graph from JSON file.
-fn load_from_json(json_path: String) -> GraphMap
+/// Load map graph from MessagePack file.
+fn load_from_mpk(mpk_path: String) -> GraphMap
 {
-    let file: File = File::open(json_path).unwrap();
+    let file: File = File::open(mpk_path).unwrap();
     let reader: BufReader<File> = BufReader::new(file);
-    let graph_hashmap: GraphMap = serde_json::from_reader(reader).unwrap();
+    let graph_hashmap: GraphMap = rmp_serde::from_read(reader).unwrap();
 
     return graph_hashmap;
 }
