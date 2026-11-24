@@ -34,7 +34,7 @@ pub struct NodeIDWrapper {
 }
 impl PartialOrd for NodeIDWrapper {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.cost.partial_cmp(&other.cost)
+        other.cost.partial_cmp(&self.cost)
     }
 }
 impl PartialEq for NodeIDWrapper {
@@ -44,7 +44,7 @@ impl PartialEq for NodeIDWrapper {
 }
 impl Ord for NodeIDWrapper {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.cost.total_cmp(&other.cost)
+        other.cost.total_cmp(&self.cost)
     }
 }
 impl Eq for NodeIDWrapper {}
