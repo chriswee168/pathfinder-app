@@ -1,10 +1,8 @@
 use std::{cmp::Ordering, collections::HashMap};
 
-use pyo3::pyclass;
 use serde::Deserialize;
 
 /// Struct for edge data in each Node.
-#[pyclass]
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Edge { 
@@ -18,7 +16,6 @@ pub struct Edge {
 }
 
 /// Struct for Node data.
-#[pyclass]
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Node { pub lat: f32, pub long: f32, pub edges: Vec<Edge> }
