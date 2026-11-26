@@ -1,10 +1,8 @@
 use std::{cmp::Ordering, collections::HashMap};
 
-use pyo3::pyclass;
 use serde::Deserialize;
 
 /// Struct for edge data in each Node.
-#[pyclass]
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Edge { 
@@ -18,7 +16,6 @@ pub struct Edge {
 }
 
 /// Struct for Node data.
-#[pyclass]
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Node { pub lat: f32, pub long: f32, pub edges: Vec<Edge> }
@@ -34,7 +31,7 @@ pub struct NodeIDWrapper {
 }
 impl PartialOrd for NodeIDWrapper {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.cost.partial_cmp(&other.cost)
+        other.cost.partial_cmp(&self.cost)
     }
 }
 impl PartialEq for NodeIDWrapper {
@@ -44,7 +41,7 @@ impl PartialEq for NodeIDWrapper {
 }
 impl Ord for NodeIDWrapper {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.cost.total_cmp(&other.cost)
+        other.cost.total_cmp(&self.cost)
     }
 }
 impl Eq for NodeIDWrapper {}

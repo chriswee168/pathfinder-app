@@ -63,7 +63,7 @@ pub fn a_star_search(
 
                         // Calculate updated cost from heuristic.
                         // Cost sign is flipped to make binary heap prioritise smaller costs.
-                        let updated_cost: f32 = -(-current_cost + edge.travel_time_s + hav_dist);
+                        let updated_cost: f32 = current_cost + edge.travel_time_s + hav_dist;
 
                         // Add next node ID wrapper to priority queue.
                         let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
