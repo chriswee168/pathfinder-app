@@ -15,7 +15,7 @@ pub struct Edge {
     pub travel_time_s: f32,
     pub length_m: f32,
     pub highway: String,
-    pub lat_long_coords: Vec<Vec<f32>>
+    pub lat_long_coords: Vec<(f32, f32)>
 }
 
 /// Struct for Node data.
