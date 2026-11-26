@@ -1,6 +1,6 @@
 use std::collections::{BinaryHeap, HashMap, HashSet};
 
-use crate::graph::{haversine::haversine, types::{GraphMap, Node, NodeIDWrapper}};
+use crate::graph::{haversine::haversine, types::{Edge, GraphMap, Node, NodeIDWrapper}};
 
 /// Implement A* search algorithm from start to end node.
 /// Return the shortest route between start and end node as a vector of string tuples.
@@ -8,11 +8,11 @@ pub fn a_star_search(
     start_node_id: i64, 
     end_node_id: i64, 
     graph_hashmap: &GraphMap
-) -> Option<Vec<(i64, i64)>>
+) -> Option<Vec<Edge>>
 {
     // Create essential heap and hashmap data structures.
     let mut node_id_priority_queue: BinaryHeap<NodeIDWrapper> = BinaryHeap::new();
-    let mut cost_hashmap: HashMap<i64, (f32, i64)> = HashMap::new(); // node_id: (total_cost, prev_node_id)
+    let mut cost_hashmap: HashMap<i64, (f32, &Edge, i64)> = HashMap::new(); // node_id: (total_cost, edge, src_node_id)
     let mut visited_nodes_hashset: HashSet<i64> = HashSet::new();
 
     // Insert initial NodeIDWrapper.
@@ -71,17 +71,19 @@ pub fn a_star_search(
                         };
                         node_id_priority_queue.push(dst_node_id_wrapper);
 
+                        let cost_hashmap_entry: (f32, &Edge, i64) = (updated_cost, edge, current_node_id);
+
                         if let Some(dst_node_cost_details) = cost_hashmap.get_mut(&dst_node_id)
                         {
-                            // Update dst node's cost and previous node if lower cost discovered.
+                            // Update dst node's cost and src node if lower cost discovered.
                             if updated_cost < dst_node_cost_details.0
                             {
-                                *dst_node_cost_details = (updated_cost, current_node_id);
+                                *dst_node_cost_details = cost_hashmap_entry;
                             }
                         }
                         else
                         {   // Add dst node details to cost hashmap if nonexistent.
-                            cost_hashmap.insert(dst_node_id, (updated_cost, current_node_id));
+                            cost_hashmap.insert(dst_node_id, cost_hashmap_entry);
                         }
                     }
                 }
@@ -93,16 +95,18 @@ pub fn a_star_search(
     if cost_hashmap.contains_key(&end_node_id)
     {
         // Get the shortest route from start to end node using cost hashmap.
-        let mut shortest_route: Vec<(i64, i64)> = Vec::new();
+        let mut shortest_route: Vec<Edge> = Vec::new();
         let mut current_id: Option<i64> = Some(end_node_id);
         while current_id.is_some()
         {
-            // Get previous node ID using current node ID.
+            // Get src node ID and edge data using current node ID.
             let dst_node_id: i64 = current_id.unwrap();
-            let src_node_id: i64 = cost_hashmap.get(&dst_node_id).unwrap().1;
+            let cost_hashmap_entry: &(f32, &Edge, i64) = cost_hashmap.get(&dst_node_id).unwrap();
+            let src_node_id: i64 = cost_hashmap_entry.2;
+            let edge: Edge = cost_hashmap_entry.1.clone();
 
-            // Add TO and FROM node ID pair to shortest route vector.
-            shortest_route.push((src_node_id, dst_node_id));
+            // Add edge struct to shortest route vector.
+            shortest_route.push(edge);
             
             if cost_hashmap.contains_key(&src_node_id)
             {
