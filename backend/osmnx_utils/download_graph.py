@@ -103,7 +103,8 @@ def create_graph_dict(graph):
             highway = "/".join(highway)
         
         graph_dict[u]["edges"].append({
-            "index": (u, v, key), 
+            "src_node_id": u,
+            "dst_node_id": v,
             "street_name": street_name,
             "speed_kph": speed_kph,
             "travel_time_s": travel_time_s,

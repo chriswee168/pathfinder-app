@@ -6,7 +6,8 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Edge { 
-    pub index: Vec<i64>,
+    pub src_node_id: i64,
+    pub dst_node_id: i64,
     pub street_name: String,
     pub speed_kph: f32,
     pub travel_time_s: f32,
