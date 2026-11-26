@@ -48,16 +48,16 @@ pub fn a_star_search(
                 let node: &Node = graph_hashmap.get(&current_node_id).unwrap();
                 for edge in &node.edges
                 {
-                    let next_node_id: i64 = edge.index[1];
-                    if visited_nodes_hashset.contains(&next_node_id)
+                    let dst_node_id: i64 = edge.dst_node_id;
+                    if visited_nodes_hashset.contains(&dst_node_id)
                     {
-                        let next_node: &Node = graph_hashmap.get(&next_node_id).unwrap();
-                        let next_node_lat: f32 = next_node.lat;
-                        let next_node_long: f32 = next_node.long;
+                        let dst_node: &Node = graph_hashmap.get(&dst_node_id).unwrap();
+                        let dst_node_lat: f32 = dst_node.lat;
+                        let dst_node_long: f32 = dst_node.long;
 
-                        // Calculate haversine distance between next node and end node.
+                        // Calculate haversine distance between dst node and end node.
                         let hav_dist: f32 = haversine(
-                            next_node_lat, next_node_long, 
+                            dst_node_lat, dst_node_long, 
                             end_node_lat, end_node_long
                         );
 
@@ -65,23 +65,23 @@ pub fn a_star_search(
                         // Cost sign is flipped to make binary heap prioritise smaller costs.
                         let updated_cost: f32 = current_cost + edge.travel_time_s + hav_dist;
 
-                        // Add next node ID wrapper to priority queue.
-                        let next_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
-                            node_id: next_node_id, cost: updated_cost
+                        // Add dst node ID wrapper to priority queue.
+                        let dst_node_id_wrapper: NodeIDWrapper = NodeIDWrapper {
+                            node_id: dst_node_id, cost: updated_cost
                         };
-                        node_id_priority_queue.push(next_node_id_wrapper);
+                        node_id_priority_queue.push(dst_node_id_wrapper);
 
-                        if let Some(next_node_cost_details) = cost_hashmap.get_mut(&next_node_id)
+                        if let Some(dst_node_cost_details) = cost_hashmap.get_mut(&dst_node_id)
                         {
-                            // Update next node's cost and previous node if lower cost discovered.
-                            if updated_cost < next_node_cost_details.0
+                            // Update dst node's cost and previous node if lower cost discovered.
+                            if updated_cost < dst_node_cost_details.0
                             {
-                                *next_node_cost_details = (updated_cost, current_node_id);
+                                *dst_node_cost_details = (updated_cost, current_node_id);
                             }
                         }
                         else
-                        {   // Add next node details to cost hashmap if nonexistent.
-                            cost_hashmap.insert(next_node_id, (updated_cost, current_node_id));
+                        {   // Add dst node details to cost hashmap if nonexistent.
+                            cost_hashmap.insert(dst_node_id, (updated_cost, current_node_id));
                         }
                     }
                 }
@@ -98,19 +98,22 @@ pub fn a_star_search(
         while current_id.is_some()
         {
             // Get previous node ID using current node ID.
-            let current_id_unwrapped: i64 = current_id.unwrap();
-            let prev_node_id: i64 = cost_hashmap.get(&current_id_unwrapped).unwrap().1;
+            let dst_node_id: i64 = current_id.unwrap();
+            let src_node_id: i64 = cost_hashmap.get(&dst_node_id).unwrap().1;
 
             // Add TO and FROM node ID pair to shortest route vector.
-            shortest_route.push((prev_node_id, current_id_unwrapped));
+            shortest_route.push((src_node_id, dst_node_id));
             
-            if cost_hashmap.contains_key(&prev_node_id)
+            if cost_hashmap.contains_key(&src_node_id)
             {
-                current_id = Some(prev_node_id);
+                current_id = Some(src_node_id);
             }
             else
             {
-                current_id = None; // Starting node ID has been reached.
+                // Starting node ID has been reached.
+                // Node IDs don't have an entry in cost hashmap if it does not have an
+                // origin node.
+                current_id = None;
             }
         }
 
