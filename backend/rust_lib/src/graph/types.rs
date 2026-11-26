@@ -1,9 +1,11 @@
 use std::{cmp::Ordering, collections::HashMap};
 
+use pyo3::pyclass;
 use serde::Deserialize;
 
 /// Struct for edge data in each Node.
-#[derive(Deserialize, Debug)]
+#[pyclass(get_all, skip_from_py_object)]
+#[derive(Deserialize, Debug, Clone)]
 #[allow(dead_code)]
 pub struct Edge { 
     pub src_node_id: i64,
